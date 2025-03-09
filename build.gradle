@@ -28,7 +28,7 @@ dependencies {
     
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     
-    runtimeOnly("com.mysql:mysql-connector-j:8.0.33") // Chỉ giữ 1 dòng này
+    runtimeOnly("com.mysql:mysql-connector-j:8.0.33") 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 }
