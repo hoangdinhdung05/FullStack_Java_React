@@ -36,12 +36,12 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
 
-        // ✅ Nếu body đã là `RestResponse`, không cần bọc lại.
+        // Nếu body đã là `RestResponse`, không cần bọc lại.
         if (body instanceof RestResponse) {
             return body;
         }
 
-        // ✅ Nếu API trả về `String`, không bọc trong `RestResponse`
+        // Nếu API trả về `String`, không bọc trong `RestResponse`
         if (body instanceof String) {
             return body;
         }
@@ -50,10 +50,10 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         res.setStatusCode(status);
         
         if (status >= 400) {
-            // ✅ Nếu là lỗi, không thay đổi format của Spring
+            // Nếu là lỗi, không thay đổi format của Spring
             return body;
         } else {
-            // ✅ Bọc response vào `RestResponse`
+            // Bọc response vào `RestResponse`
             res.setData(body);
             res.setMessage("CALL API SUCCESS");
             return res;
