@@ -11,14 +11,17 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import vn.hoangdung.restAPI.domain.dto.LoginDTO;
+import vn.hoangdung.restAPI.util.SecurityUtil;
 
 @RestController
 public class AuthController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final SecurityUtil securityUtil;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.securityUtil = securityUtil;
     }
     
     @PostMapping("/login")
@@ -29,6 +32,8 @@ public class AuthController {
         //Xác thực người dùng loadUserByUsername()
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken); 
 
+        //Create token
+        this.securityUtil.createToken(authentication);
         return ResponseEntity.ok().body(loginDTO);
 
     }
