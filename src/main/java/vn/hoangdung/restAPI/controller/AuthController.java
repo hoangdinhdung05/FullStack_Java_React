@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import vn.hoangdung.restAPI.domain.dto.LoginDTO;
+import vn.hoangdung.restAPI.domain.dto.ResLoginDTO;
 import vn.hoangdung.restAPI.util.SecurityUtil;
 
 @RestController
@@ -25,7 +26,7 @@ public class AuthController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<LoginDTO> login(@RequestBody @Valid LoginDTO loginDTO) {
+    public ResponseEntity<ResLoginDTO> login(@RequestBody @Valid LoginDTO loginDTO) {
         //Nạp user và pass vào security
         UsernamePasswordAuthenticationToken authenticationToken  = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
 
@@ -33,8 +34,10 @@ public class AuthController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken); 
 
         //Create token
-        this.securityUtil.createToken(authentication);
-        return ResponseEntity.ok().body(loginDTO);
+        String access_token = this.securityUtil.createToken(authentication);
+        ResLoginDTO res = new ResLoginDTO();
+        res.setAccessToken(access_token);
+        return ResponseEntity.ok().body(res);
 
     }
 
