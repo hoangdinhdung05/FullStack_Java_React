@@ -22,13 +22,15 @@ public class SecurityConfiguration {
     //Kiểm tra quyền hạn
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        http    
+                .csrf(c -> c.disable())
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers("/").permitAll()
-                                .anyRequest().authenticated()
+                                // .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
-                .formLogin(f -> f.permitAll())
+                .formLogin(f -> f.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();

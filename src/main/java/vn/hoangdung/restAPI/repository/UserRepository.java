@@ -9,4 +9,6 @@ import vn.hoangdung.restAPI.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     
+    User findByEmail(String email);
+
 }
