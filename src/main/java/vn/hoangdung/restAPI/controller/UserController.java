@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoangdung.restAPI.domain.User;
 import vn.hoangdung.restAPI.service.UserService;
-import vn.hoangdung.restAPI.service.error.IdInvalidException;
+import vn.hoangdung.restAPI.util.error.IdInvalidException;
 
 
 @RestController

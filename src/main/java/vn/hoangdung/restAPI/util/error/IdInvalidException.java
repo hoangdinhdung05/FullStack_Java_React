@@ -1,4 +1,4 @@
-package vn.hoangdung.restAPI.service.error;
+package vn.hoangdung.restAPI.util.error;
 
 public class IdInvalidException extends Exception {
     

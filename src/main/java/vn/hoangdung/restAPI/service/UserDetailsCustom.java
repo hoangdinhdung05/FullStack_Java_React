@@ -12,17 +12,21 @@ import org.springframework.stereotype.Component;
 
 
 @Component("userDetailService")
-public class UserDetailCustom implements UserDetailsService {
+public class UserDetailsCustom implements UserDetailsService {
 
     private final UserService userService;
 
-    public UserDetailCustom(UserService userService) {
+    public UserDetailsCustom(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         vn.hoangdung.restAPI.domain.User user = this.userService.handleGetUserByUsername(username);
+
+        if(user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
 
         return new User( 
                 user.getEmail(), 
