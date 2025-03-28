@@ -19,15 +19,14 @@ import vn.hoangdung.restAPI.domain.RestResponse;
 public class GlobalException {
         
     @ExceptionHandler(value = {
-            IdInvalidException.class,
             UsernameNotFoundException.class,
             BadCredentialsException.class
     })
-    public ResponseEntity<RestResponse<Object>> handleIdException(IdInvalidException ex) {
+    public ResponseEntity<RestResponse<Object>> handleIdException(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError("INVALID_ID");
-        res.setMessage(ex.getMessage());  // Giữ nguyên thông báo lỗi chi tiết
+        res.setError(ex.getMessage());
+        res.setMessage("Exception occurred...");  // Giữ nguyên thông báo lỗi chi tiết
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
