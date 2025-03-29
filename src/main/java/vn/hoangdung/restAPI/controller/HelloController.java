@@ -5,15 +5,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoangdung.restAPI.util.error.IdInvalidException;
 
+
 @RestController
 public class HelloController {
 
-    @SuppressWarnings("unused")
     @GetMapping("/")
-    public String getHello() throws Exception {
-        if(true) {
-            throw new IdInvalidException("Error");
-        }
+    // @CrossOrigin
+    public String getHello() throws IdInvalidException {
         return "Hello";
     }
 
