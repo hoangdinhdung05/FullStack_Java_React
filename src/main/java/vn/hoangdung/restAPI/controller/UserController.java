@@ -1,8 +1,11 @@
 package vn.hoangdung.restAPI.controller;
 
 
-import java.util.List;
 
+import java.util.Optional;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,9 +16,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoangdung.restAPI.domain.User;
+import vn.hoangdung.restAPI.domain.dto.ResultPaginationDTO;
 import vn.hoangdung.restAPI.service.UserService;
 import vn.hoangdung.restAPI.util.error.IdInvalidException;
 
@@ -60,8 +65,16 @@ public class UserController {
 
     // fetch all users
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUser() {
-        List<User> users = this.userService.fetchAllUser();
+    public ResponseEntity<ResultPaginationDTO> getAllUser(
+                @RequestParam("current") Optional<String> currentOptional, 
+                @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+
+        String sCurrent = currentOptional.isPresent() ? currentOptional.get() : "";
+        String sPageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+
+        Pageable pageable = PageRequest.of(Integer.parseInt(sCurrent) -1, Integer.parseInt(sPageSize));
+
+        ResultPaginationDTO users = this.userService.fetchAllUser(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
