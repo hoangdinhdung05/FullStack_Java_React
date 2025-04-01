@@ -5,11 +5,13 @@ package vn.hoangdung.restAPI.service;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.hoangdung.restAPI.domain.Company;
 import vn.hoangdung.restAPI.domain.dto.Meta;
 import vn.hoangdung.restAPI.domain.dto.ResultPaginationDTO;
 import vn.hoangdung.restAPI.repository.CompanyRepository;
+import vn.hoangdung.restAPI.util.CompanySpecification;
 
 
 @Service
@@ -27,9 +29,11 @@ public class CompanyService {
     }
 
     //Get List Company
-    public ResultPaginationDTO fetchAllCompany(Pageable pageable) {
+    public ResultPaginationDTO fetchAllCompany(String name,Pageable pageable) {
 
-        Page<Company> pageCompany = this.companyRepository.findAll(pageable);
+        Specification<Company> spec = Specification.where(CompanySpecification.hasName(name));
+
+        Page<Company> pageCompany = this.companyRepository.findAll(spec, pageable);
 
         ResultPaginationDTO rs = new ResultPaginationDTO();
 
