@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import vn.hoangdung.restAPI.domain.dto.LoginDTO;
 import vn.hoangdung.restAPI.domain.dto.ResLoginDTO;
 import vn.hoangdung.restAPI.service.UserService;
 import vn.hoangdung.restAPI.util.SecurityUtil;
+import vn.hoangdung.restAPI.util.anotation.ApiMessage;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -76,7 +78,12 @@ public class AuthController {
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, resCookies.toString())
             .body(res);
+    }
 
+    @GetMapping("/auth/account")
+    @ApiMessage("fetch account")
+    public String getAccount() {
+        return "Account";
     }
 
 }
