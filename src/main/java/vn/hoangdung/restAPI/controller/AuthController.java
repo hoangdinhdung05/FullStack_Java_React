@@ -39,7 +39,7 @@ public class AuthController {
         this.userService = userService;
     }
     
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<ResLoginDTO> login(@RequestBody @Valid LoginDTO loginDTO) {
         //Nạp user và pass vào security
         UsernamePasswordAuthenticationToken authenticationToken  = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
@@ -48,7 +48,6 @@ public class AuthController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken); 
 
         //Create token
-        String access_token = this.securityUtil.createAccessToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         ResLoginDTO res = new ResLoginDTO();
@@ -61,6 +60,9 @@ public class AuthController {
             );
             res.setUser(userLogin);
         }
+
+        String access_token = this.securityUtil.createAccessToken(authentication, res.getUser());
+
         //set token
         res.setAccessToken(access_token);
         //create refresh token
@@ -82,8 +84,20 @@ public class AuthController {
 
     @GetMapping("/auth/account")
     @ApiMessage("fetch account")
-    public String getAccount() {
-        return "Account";
+    public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+        //Lấy thông tin người dùng từ security
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+
+        //Lấy thông tin người dùng từ DB
+        User currentUserDB = this.userService.handleGetUserByUsername(email);
+        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+        if(currentUserDB != null) {
+            userLogin.setId(currentUserDB.getId());
+            userLogin.setEmail(currentUserDB.getEmail());
+            userLogin.setName(currentUserDB.getName());
+        }
+
+        return ResponseEntity.ok().body(userLogin);
     }
 
 }
