@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import vn.hoangdung.restAPI.domain.dto.ResLoginDTO;
+
 
 @Service
 public class SecurityUtil {
@@ -31,13 +33,16 @@ public class SecurityUtil {
     @Value("${hoangdung.jwt.base64-secret}") 
     private String jwtKey; 
 
-    @Value("${hoangdung.jwt.token-validity-in-seconds}")
-    private long jwtKeyExpiration;
+    @Value("${hoangdung.jwt.access-token-validity-in-seconds}")
+    private long accessTokenExpiration;
 
-    public String createToken(Authentication authentication) { 
+    @Value("${hoangdung.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenExpiration;
+
+    public String createAccessToken(Authentication authentication) { 
  
         Instant now = Instant.now(); 
-        Instant validity = now.plus(this.jwtKeyExpiration, ChronoUnit.SECONDS); 
+        Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS); 
      
  
         // @formatter:off 
@@ -52,7 +57,23 @@ public class SecurityUtil {
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue(); 
     }
 
-    //Lấy người dùng đang đăng nhập
+    public String createRefreshToken(String email, ResLoginDTO dto) { 
+ 
+        Instant now = Instant.now(); 
+        Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS); 
+     
+ 
+        // @formatter:off 
+        JwtClaimsSet claims = JwtClaimsSet.builder() 
+            .issuedAt(now) 
+            .expiresAt(validity) 
+            .subject(email) 
+            .claim("user", dto.getUser()) 
+            .build(); 
+ 
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build(); 
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue(); 
+    }
 
     /**
      * Get the login of the current user.
