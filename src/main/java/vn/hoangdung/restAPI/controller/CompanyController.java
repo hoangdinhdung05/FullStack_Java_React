@@ -16,16 +16,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 import vn.hoangdung.restAPI.domain.Company;
+import vn.hoangdung.restAPI.domain.User;
 import vn.hoangdung.restAPI.domain.response.ResultPaginationDTO;
+import vn.hoangdung.restAPI.repository.UserRepository;
 import vn.hoangdung.restAPI.service.CompanyService;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
 public class CompanyController {
     
     private final CompanyService companyService;
+    private final UserRepository userRepository;
 
-    public CompanyController(CompanyService companyService) {
+    public CompanyController(CompanyService companyService, UserRepository userRepository) {
+        this.userRepository = userRepository;
         this.companyService = companyService;
     }
 
@@ -56,7 +62,17 @@ public class CompanyController {
     //Delete Company
     @DeleteMapping("/companies/{id}")
     public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) {
+        Optional<Company> companyOptional = this.companyService.getCompanyById(id);
+        //phải xóa user trước khi xóa company
+        if(companyOptional.isPresent()) {
+            Company com = companyOptional.get();
+            //fetch all user
+            List<User> users = this.userRepository.findByCompany(com);
+            this.userRepository.deleteAll(users);
+        }
+
         this.companyService.handleDeleteCompany(id);
+
         return ResponseEntity.ok(null);
     }
 
