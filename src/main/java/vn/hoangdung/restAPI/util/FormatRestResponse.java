@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import org.springframework.lang.Nullable;
 import jakarta.servlet.http.HttpServletResponse;
-import vn.hoangdung.restAPI.domain.RestResponse;
+import vn.hoangdung.restAPI.domain.response.RestResponse;
 import vn.hoangdung.restAPI.util.anotation.ApiMessage;
 
 @ControllerAdvice
