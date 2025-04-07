@@ -1,4 +1,4 @@
-package vn.hoangdung.restAPI.domain.dto;
+package vn.hoangdung.restAPI.domain.response;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

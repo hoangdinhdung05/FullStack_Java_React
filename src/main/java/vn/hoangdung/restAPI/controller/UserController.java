@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.hoangdung.restAPI.domain.User;
-import vn.hoangdung.restAPI.domain.dto.ResCreateUserDTO;
-import vn.hoangdung.restAPI.domain.dto.ResUpdateUserDTO;
-import vn.hoangdung.restAPI.domain.dto.ResUserDTO;
-import vn.hoangdung.restAPI.domain.dto.ResultPaginationDTO;
+import vn.hoangdung.restAPI.domain.response.ResCreateUserDTO;
+import vn.hoangdung.restAPI.domain.response.ResUpdateUserDTO;
+import vn.hoangdung.restAPI.domain.response.ResUserDTO;
+import vn.hoangdung.restAPI.domain.response.ResultPaginationDTO;
 import vn.hoangdung.restAPI.service.UserService;
 import vn.hoangdung.restAPI.util.error.IdInvalidException;
 

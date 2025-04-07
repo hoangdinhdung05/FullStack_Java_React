@@ -1,4 +1,4 @@
-package vn.hoangdung.restAPI.domain.dto;
+package vn.hoangdung.restAPI.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;

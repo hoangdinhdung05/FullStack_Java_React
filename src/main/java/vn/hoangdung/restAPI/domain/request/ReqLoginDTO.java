@@ -1,4 +1,4 @@
-package vn.hoangdung.restAPI.domain.dto;
+package vn.hoangdung.restAPI.domain.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

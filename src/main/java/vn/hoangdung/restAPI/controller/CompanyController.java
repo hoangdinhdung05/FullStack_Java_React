@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 import vn.hoangdung.restAPI.domain.Company;
-import vn.hoangdung.restAPI.domain.dto.ResultPaginationDTO;
+import vn.hoangdung.restAPI.domain.response.ResultPaginationDTO;
 import vn.hoangdung.restAPI.service.CompanyService;
 
 @RestController
