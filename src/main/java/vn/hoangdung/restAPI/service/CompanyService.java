@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.hoangdung.restAPI.domain.Company;
-import vn.hoangdung.restAPI.domain.dto.Meta;
 import vn.hoangdung.restAPI.domain.dto.ResultPaginationDTO;
 import vn.hoangdung.restAPI.repository.CompanyRepository;
 import vn.hoangdung.restAPI.util.CompanySpecification;
@@ -37,7 +36,7 @@ public class CompanyService {
 
         ResultPaginationDTO rs = new ResultPaginationDTO();
 
-        Meta mt = new Meta();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
         mt.setPage(pageCompany.getNumber() + 1);
         mt.setPageSize(pageCompany.getSize());

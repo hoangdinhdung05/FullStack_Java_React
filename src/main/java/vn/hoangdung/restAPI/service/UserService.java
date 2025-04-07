@@ -9,9 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import vn.hoangdung.restAPI.domain.User;
-import vn.hoangdung.restAPI.domain.dto.Meta;
 import vn.hoangdung.restAPI.domain.dto.ResCreateUserDTO;
 import vn.hoangdung.restAPI.domain.dto.ResUpdateUserDTO;
 import vn.hoangdung.restAPI.domain.dto.ResUserDTO;
@@ -52,7 +50,7 @@ public class UserService {
 
         ResultPaginationDTO rs = new ResultPaginationDTO();
 
-        Meta mt = new Meta();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
         mt.setPage(pageUser.getNumber() + 1);
         mt.setPageSize(pageUser.getSize());
         mt.setPages(pageUser.getTotalPages());
