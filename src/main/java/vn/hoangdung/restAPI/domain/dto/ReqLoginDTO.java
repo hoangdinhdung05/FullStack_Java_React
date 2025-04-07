@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginDTO {
+public class ReqLoginDTO {
 
     @NotBlank(message = "Email không được để trống")
     private String username;
