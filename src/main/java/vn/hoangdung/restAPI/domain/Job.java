@@ -1,45 +1,53 @@
 package vn.hoangdung.restAPI.domain;
 
-import java.time.Instant;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.hoangdung.restAPI.util.SecurityUtil;
-
+import vn.hoangdung.restAPI.util.constant.LevelEnum;
+import java.time.Instant;
+import java.util.List;
 
 @Entity
-@Table(name = "companies")
+@Table(name = "jobs")
 @Getter
 @Setter
-public class Company {
+public class Job {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Name không được để trống")
+    @NotBlank(message = "Tên job không được bỏ trống")
     private String name;
+    private String location;
+    private double salary;
+    private int quantity;
+    private LevelEnum level;
 
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
 
-    private String address;
-    private String logo;
+    private Instant startDate;
+    private Instant endDate;
+    private boolean active;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
 
-    @OneToMany( mappedBy = "company", fetch = FetchType.LAZY)
-    @JsonIgnore //thêm để tránh vòng lặp vô hạn khi getAllCompany
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn( name = "company_id")
+    private Company company;
 
-    @OneToMany( mappedBy = "company", fetch = FetchType.LAZY)
-    @JsonIgnore //
-    private List<Job> job;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = {"jobs"})
+    @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"),
+    inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private List<Skill> skills;
 
     @PrePersist
     public void handleBeforeCreate() {
@@ -50,7 +58,6 @@ public class Company {
         this.createdAt = Instant.now();
     }
 
-    //Update
     @PreUpdate
     public void handleBeforeUpdate() {
         this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
@@ -61,4 +68,3 @@ public class Company {
     }
 
 }
-
