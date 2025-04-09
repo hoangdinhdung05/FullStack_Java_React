@@ -1,6 +1,7 @@
 package vn.hoangdung.restAPI.util;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -18,36 +19,27 @@ import vn.hoangdung.restAPI.util.anotation.ApiMessage;
 public class FormatRestResponse implements ResponseBodyAdvice<Object> {
 
     @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(MethodParameter returnType, Class converterType) {
         return true;
     }
 
     @Override
     public Object beforeBodyWrite(
-            @Nullable Object body, // Sử dụng đúng @Nullable của Spring
+            Object body,
             MethodParameter returnType,
             MediaType selectedContentType,
-            Class<? extends HttpMessageConverter<?>> selectedConverterType,
+            Class selectedConverterType,
             ServerHttpRequest request,
             ServerHttpResponse response) {
-
-        if (!(response instanceof ServletServerHttpResponse)) {
-            return body;
-        }
-
         HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
 
-        if (body instanceof RestResponse) {
-            return body;
-        }
-
-        if (body instanceof String) {
-            return body;
-        }
-
-        RestResponse<Object> res = new RestResponse<>();
+        RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(status);
+
+        if (body instanceof String || body instanceof Resource) {
+            return body;
+        }
 
         if (status >= 400) {
             return body;
@@ -56,6 +48,7 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
             ApiMessage message = returnType.getMethodAnnotation(ApiMessage.class);
             res.setMessage(message != null ? message.value() : "CALL API SUCCESS");
         }
+
         return res;
     }
 }
