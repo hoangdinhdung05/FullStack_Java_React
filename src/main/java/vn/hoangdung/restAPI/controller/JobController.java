@@ -42,7 +42,8 @@ public class JobController {
         if (jobOptional.isEmpty()) {
             throw new IdInvalidException("Job not found");
         }
-        return ResponseEntity.ok(this.jobService.update(job));
+        ResUpdateJobDTO newJob = this.jobService.update(job, jobOptional.get());
+        return ResponseEntity.ok().body(newJob);
     }
 
     // ✅ Delete Job

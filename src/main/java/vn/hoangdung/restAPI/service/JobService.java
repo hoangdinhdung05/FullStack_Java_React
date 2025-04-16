@@ -4,12 +4,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vn.hoangdung.restAPI.domain.Company;
 import vn.hoangdung.restAPI.domain.Job;
 import vn.hoangdung.restAPI.domain.Skill;
 import vn.hoangdung.restAPI.domain.response.ResultPaginationDTO;
 import vn.hoangdung.restAPI.domain.response.job.ResCreateJobDTO;
 import vn.hoangdung.restAPI.domain.response.job.ResJobDTO;
 import vn.hoangdung.restAPI.domain.response.job.ResUpdateJobDTO;
+import vn.hoangdung.restAPI.repository.CompanyRepository;
 import vn.hoangdung.restAPI.repository.JobRepository;
 import vn.hoangdung.restAPI.repository.SkillRepository;
 import vn.hoangdung.restAPI.util.JobSpecification;
@@ -24,10 +26,12 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final SkillRepository skillRepository;
+    private final CompanyRepository companyRepository;
 
-    public JobService(JobRepository jobRepository, SkillRepository skillRepository) {
+    public JobService(JobRepository jobRepository, SkillRepository skillRepository, CompanyRepository companyRepository) {
         this.jobRepository = jobRepository;
         this.skillRepository = skillRepository;
+        this.companyRepository = companyRepository;
     }
 
     // fetch job by id
@@ -41,7 +45,7 @@ public class JobService {
         if (j.getSkills() != null) {
             List<Long> reqSkills = j.getSkills()
                     .stream()
-                    .map(x -> x.getId())
+                    .map(Skill::getId)
                     .collect(Collectors.toList());
 
             List<Skill> dbSkills = this.skillRepository.findByIdIn(reqSkills);
@@ -52,6 +56,12 @@ public class JobService {
             }
 
             j.setSkills(dbSkills);
+        }
+
+        //check company
+        if (j.getCompany() != null) {
+            Optional<Company> companyOptional = this.companyRepository.findById(j.getCompany().getId());
+            companyOptional.ifPresent(j::setCompany);
         }
 
         // create job
@@ -82,7 +92,7 @@ public class JobService {
     }
 
     // Update Job
-    public ResUpdateJobDTO update(Job job) {
+    public ResUpdateJobDTO update(Job job, Job jobDB) {
         if (job == null) {
             throw new IllegalArgumentException("Job cannot be null");
         }
@@ -93,10 +103,25 @@ public class JobService {
                     .map(Skill::getId)
                     .collect(Collectors.toList());
             List<Skill> dbSkills = this.skillRepository.findByIdIn(reqSkills);
-            job.setSkills(dbSkills);
+            jobDB.setSkills(dbSkills);
         }
 
-        Job updatedJob = this.jobRepository.save(job);
+        if (job.getCompany() != null) {
+            Optional<Company> companyOptional = this.companyRepository.findById(job.getCompany().getId());
+            companyOptional.ifPresent(jobDB::setCompany);
+        }
+
+        jobDB.setName(job.getName());
+        jobDB.setSalary(job.getSalary());
+        jobDB.setQuantity(job.getQuantity());
+        jobDB.setLocation(job.getLocation());
+        jobDB.setLevel(job.getLevel());
+        jobDB.setStartDate(job.getStartDate());
+        jobDB.setEndDate(job.getEndDate());
+        jobDB.setActive(job.isActive());
+
+
+        Job updatedJob = this.jobRepository.save(jobDB);
         return convertToResUpdateDTO(updatedJob);
     }
 

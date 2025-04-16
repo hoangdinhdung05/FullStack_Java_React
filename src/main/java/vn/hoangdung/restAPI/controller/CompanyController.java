@@ -20,6 +20,9 @@ import vn.hoangdung.restAPI.domain.User;
 import vn.hoangdung.restAPI.domain.response.ResultPaginationDTO;
 import vn.hoangdung.restAPI.repository.UserRepository;
 import vn.hoangdung.restAPI.service.CompanyService;
+import vn.hoangdung.restAPI.util.anotation.ApiMessage;
+import vn.hoangdung.restAPI.util.error.IdInvalidException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -35,11 +38,13 @@ public class CompanyController {
         this.companyService = companyService;
     }
 
+    //create
     @PostMapping("/companies")
     public ResponseEntity<?> createCompany(@Valid @RequestBody Company reqCompany) {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.handleCreateCompany(reqCompany));
     }
 
+    //get list
     @GetMapping("/companies")
     public ResponseEntity<ResultPaginationDTO> getAllCompany(
             @RequestParam(value = "name", required = false) String name,
@@ -74,6 +79,17 @@ public class CompanyController {
         this.companyService.handleDeleteCompany(id);
 
         return ResponseEntity.ok(null);
+    }
+
+    //get by id
+    @GetMapping("/companies/{id}")
+    @ApiMessage("Fetch Comany by id")
+    public ResponseEntity<Company> fetchCompanyById(@PathVariable long id) throws IdInvalidException {
+        Optional<Company> companyOptional = this.companyService.getCompanyById(id);
+        if(companyOptional.isEmpty()) {
+            throw new IdInvalidException("Company với id = " + id + " không tồn tại");
+        }
+        return ResponseEntity.ok().body(companyOptional.get());
     }
 
 }
