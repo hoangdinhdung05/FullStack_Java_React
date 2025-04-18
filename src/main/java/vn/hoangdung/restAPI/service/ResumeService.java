@@ -1,12 +1,11 @@
 package vn.hoangdung.restAPI.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import vn.hoangdung.restAPI.domain.Job;
 import vn.hoangdung.restAPI.domain.Resume;
-import vn.hoangdung.restAPI.domain.User;
 import vn.hoangdung.restAPI.domain.response.ResultPaginationDTO;
 import vn.hoangdung.restAPI.domain.response.Resume.ResCreateResumeDTO;
 import vn.hoangdung.restAPI.domain.response.Resume.ResFetchResumeDTO;
@@ -15,6 +14,7 @@ import vn.hoangdung.restAPI.repository.JobRepository;
 import vn.hoangdung.restAPI.repository.ResumeRepository;
 import vn.hoangdung.restAPI.repository.UserRepository;
 import vn.hoangdung.restAPI.util.ResumeSpecification;
+import vn.hoangdung.restAPI.util.SecurityUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -116,4 +116,34 @@ public class ResumeService {
         result.setResult(listResume);
         return result;
     }
+
+    public ResultPaginationDTO fetchResumeByUser(Pageable pageable) {
+        String email = SecurityUtil.getCurrentUserLogin().orElse("");
+
+        // Tạo Specification để filter resume theo email người dùng
+        Specification<Resume> spec = (root, query, cb) ->
+                cb.equal(root.get("user").get("email"), email);
+
+        Page<Resume> pageResume = this.resumeRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
+
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+        meta.setPages(pageResume.getTotalPages());
+        meta.setTotal(pageResume.getTotalElements());
+
+        result.setMeta(meta);
+
+        List<ResFetchResumeDTO> listResume = pageResume.getContent()
+                .stream()
+                .map(this::getResume)
+                .collect(Collectors.toList());
+
+        result.setResult(listResume);
+
+        return result;
+    }
+
 }
