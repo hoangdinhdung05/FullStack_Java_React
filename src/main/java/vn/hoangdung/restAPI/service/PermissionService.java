@@ -88,5 +88,12 @@ public class PermissionService {
         return result;
     }
 
-
+    //check name
+    public boolean isSameName(Permission p) {
+        Permission permissionDB = this.fetchById(p.getId());
+        if(permissionDB != null) {
+            return permissionDB.getName().equals(p.getName());
+        }
+        return false;
+    }
 }

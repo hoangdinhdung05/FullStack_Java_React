@@ -3,17 +3,20 @@ package vn.hoangdung.restAPI.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import vn.hoangdung.restAPI.domain.User;
 import vn.hoangdung.restAPI.domain.request.ReqLoginDTO;
+import vn.hoangdung.restAPI.domain.response.ResCreateUserDTO;
 import vn.hoangdung.restAPI.domain.response.ResLoginDTO;
 import vn.hoangdung.restAPI.service.UserService;
 import vn.hoangdung.restAPI.util.SecurityUtil;
@@ -27,14 +30,32 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${hoangdung.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil, UserService userService) {
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
+                          SecurityUtil securityUtil,
+                          UserService userService,
+                          PasswordEncoder passwordEncoder) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @PostMapping("/auth/register")
+    @ApiMessage("Register a new user")
+    public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody User postManUser) throws IdInvalidException {
+        boolean isEmailExist = this.userService.isEmailExist(postManUser.getEmail());
+        if(isEmailExist) {
+            throw new IdInvalidException("Email " + postManUser.getEmail() + " đã tồi tại. Vui lòng nhập Email khác");
+        }
+        String hasdPassword = this.passwordEncoder.encode(postManUser.getPassword());
+        postManUser.setPassword(hasdPassword);
+        User newUser = this.userService.handleCreateUser(postManUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(newUser));
     }
 
     @PostMapping("/auth/login")
